@@ -111,7 +111,7 @@ class CheckoutController extends Controller
 			],
 			'description' => 'ICCM-Africa',
 //			'webhookUrl' => route('mollie_webhook'),
-			'redirectUrl' => route('mollie_redirect', ['id' => $invoice->mollie_uid]),
+			'redirectUrl' => route('mollie_redirect', ['uid' => $invoice->mollie_uid]),
 		]);
 		
 		$invoice->mollie_id = $payment->id;
