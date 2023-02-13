@@ -5,3 +5,6 @@ INSERT INTO products (name, description, cost) VALUES ('Taxi', 'Taxi between air
 INSERT INTO currencies (code, name, symbol, rate, def) VALUES ('KES', 'Kenyan shilling', 'KSh', 1, 1);
 INSERT INTO currencies (code, name, symbol, rate, def) VALUES ('EUR', 'Euro', '€', 0.009009, 0);
 INSERT INTO currencies (code, name, symbol, rate, def) VALUES ('USD', 'US Dollar', 'US $', 0.01, 0);
+
+INSERT INTO groups(name, org_type, address, town, zipcode, country, telephone) VALUES ('admin', 'mission', 'empty', 'empty', '12345', 'Belgium', '12345');
+INSERT INTO users(name, email, password, role, group_id, accommodation_id) VALUES('admin','admin@example.org','invalid','admin',1,1);
