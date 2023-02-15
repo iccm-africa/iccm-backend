@@ -34,6 +34,20 @@ mysql -u <username> <dbname> -p < database/database-example.sql
 php artisan tinker --execute="\$user = User::where('name', 'admin')->first();\$user->password = Hash::make('NOT_TopSecret1234');\$user->email = 'admin@example.org';\$user->save();"
 ```
 
+Upgrade Laravel version
+-----------------------
+
+Follow the instructions at eg. https://laravel.com/docs/9.x/upgrade
+
+Update the composer dependencies in composer.json, according to the upgrade instructions.
+
+Then run:
+
+```
+composer update
+composer install
+```
+
 Hints for Developers
 --------------------
 
