@@ -33,3 +33,9 @@ mysql -u <username> <dbname> -p < database/database-example.sql
 php artisan tinker --execute="\$user = User::where('name', 'admin')->first();\$user->password = Hash::make('NOT_TopSecret1234!');\$user->email = 'admin@example.org';\$user->save();"
 ```
 
+Hints for Developers
+--------------------
+
+* The models are defined in `app`, eg. `app/Group.php`
+* The views are defined in `resources/views/`, eg. `about.blade.php` and `auth/register.blade.php`
+* You find the controllers in `app/Http/Controllers/`, eg. `GroupController.php` and `AdminController.php`
