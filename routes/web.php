@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\DynamicPageController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -79,5 +83,7 @@ Route::get('/invoice/{id}','GroupController@downloadPDF');
 #Route::post('/postregistration', 'PostRegistrationController@saveForm')->name('saveForm');
 #Route::get('/postregistration', 'PostRegistrationController@index');
 #Route::get('/postregistration', 'PostRegistrationController@edit')->name('editform');
+Route::resource('/dynamicPages', DynamicPageController::class);
+Route::get('/showPage/{id}', [DynamicPageController::class, 'showPage'])->name('showPage');
 
 
