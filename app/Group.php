@@ -8,7 +8,10 @@ class Group extends Model
 {
 	protected $table='groups';
 	protected $fillable=['name','website','org_type','address','town','state','zipcode','country','telephone','checked_out'];
-	
+
+    protected $attributes = [
+        'checked_out' => 0,
+    ];
 	public function users()
 	{
 		return $this->hasMany('App\User');

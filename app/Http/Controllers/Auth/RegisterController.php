@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\RegistrableTrait;
 use App\User;
 use App\Accommodation;
 use App\Group;
@@ -27,6 +28,8 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+    use RegistrableTrait;
+
 
     /**
      * Where to redirect users after registration.
@@ -45,7 +48,7 @@ class RegisterController extends Controller
         $this->middleware('guest');
 		$this->redirectTo = route('group');
     }
-    
+
     public function showRegistrationForm()
     {
 		$accommodations = Accommodation::all();
@@ -85,50 +88,16 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
+     *
      * @return \App\User
+     * @throws \Exception
      */
     protected function create(array $data)
     {
 		$accommodation = Accommodation::find($data['accommodation']);
-		$user = new User;
-		$user->fill([
-            'name' 		=> $data['name'],
-            'lastname'	=> $data['lastname'],
-            'nickname'	=> $data['nickname'],
-            'passport' 	=> $data['passport'],
-            'gender'	=> $data['gender'],
-            'residence'	=> $data['residence'],
-            'email' 	=> $data['email'],
-            'mail_id'	=> bin2hex(random_bytes(8)),
-            'password' 	=> Hash::make($data['password']),
-        ]);
-        $user->role = 'groupadmin';
-        $user->accommodation()->associate($accommodation);
-        $group = new Group;
-		$group->fill([
-			'name' 		=> $data['organisation'],
-			'website' 	=> $data['website'],
-            'org_type'	=> $data['orgtype'] == 'other' ? $data['orgtypeother'] : $data['orgtype'],
-            'address'	=> $data['address'],
-            'town'		=> $data['town'],
-            'state'		=> $data['state'],
-            'zipcode'	=> $data['zipcode'],
-            'country'	=> $data['country'],
-            'telephone'	=> $data['telephone'],  
-		]);
-		$keys = array_keys($data);
-		$ids=[];
-		foreach ($keys as $k) {
-			if (preg_match("/^product_([0-9]+)$/", $k, $matches) === 1) {
-				$ids[] = $matches[1];
-			}
-		}
-		DB::transaction(function() use ($group, $user, $ids) {
-			$group->save();
-			$group->users()->save($user);
-			$user->products()->sync($ids);
-		});
+        $group = $this->getGroup($data);
+        $user = $this->registerUser($data, 'groupadmin', $group);
         return $user;
     }
 }
