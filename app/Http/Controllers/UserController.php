@@ -6,6 +6,7 @@ use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -30,6 +31,22 @@ class UserController extends Controller
      * @throws \Exception
      */
     public function store(Request $request)
+    {
+        $data = $request->all();
+        $group = Auth::user()->group;
+        $user = $this->registerUser($data, 'participant', $group);
+        return (new UserResource($user))->response();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function register(Request $request)
     {
         $data = $request->all();
         $group = $this->getGroup($data);
