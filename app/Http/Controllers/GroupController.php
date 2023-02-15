@@ -17,6 +17,7 @@ use PDF;
 
 class GroupController extends Controller
 {
+    use RegistrableTrait;
 	public function __construct() {
 		$this->middleware('auth');
 	}
@@ -43,17 +44,6 @@ class GroupController extends Controller
 		$users_checkout = $group->users()->where("checked_out", false)->get();
 		return view ('group', compact('group', 'users', 'users_checkout', 'thanks', 'userAdded', 'msg'));
 	}
-	public function form_validate($request){
-		$request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'passport' => ['required', 'string', 'max:255'],
-            'gender' => ['required'],
-            'residence' => ['required', 'string', 'max:255'],
-            'accommodation' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        ]);
-	}
 	public function addUser() {
 		$organisation = Auth::user()->group->name;
 		$accommodations = Accommodation::all();
@@ -61,38 +51,19 @@ class GroupController extends Controller
 		$products = Product::all();
 		return view ('auth.register', compact('accommodations', 'organisation', 'products', 'def'))->with('login', false);
 	}
-	public function saveUser(Request $request) {
-		$this->form_validate($request);
-		$data = $request->all();
-		$user = new User;
-		$user->fill([
-            'name' 		=> $data['name'],
-            'lastname'	=> $data['lastname'],
-            'nickname'	=> $data['nickname'],
-            'passport' 	=> $data['passport'],
-            'gender'	=> $data['gender'],
-            'residence'	=> $data['residence'],
-            'email' 	=> $data['email'],
-            'mail_id'	=> bin2hex(random_bytes(8)),
-		]);
-		$user->role = 'participant';
-		$accommodation = Accommodation::find($data['accommodation']);
-		$user->accommodation()->associate($accommodation);
-		$keys = array_keys($data);
-		$ids=[];
-		foreach ($keys as $k) {
-			if (preg_match("/^product_([0-9]+)$/", $k, $matches) === 1) {
-				$ids[] = $matches[1];
-			}
-		}
-		$group = Auth::user()->group;
-		$group->checked_out = false;
-		DB::transaction(function() use ($group, $user, $ids) {
-			$group->save();
-			$group->users()->save($user);
-			$user->products()->sync($ids);
-		});
-		return redirect()->route('group');
+
+    /**
+     * Handle a registration request for the application.
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @throws \Exception
+     */
+    public function saveUser(Request $request) {
+        $this->form_validate($request);
+        $data = $request->all();
+        $group = Auth::user()->group;
+		$this->registerUser($data, 'participant', $group);
+        return redirect()->route('group');
 	}
 
 	public function downloadInvoice($uid) {
