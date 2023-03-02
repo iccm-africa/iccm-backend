@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,14 +8,17 @@ class Group extends Model
 {
 	protected $table='groups';
 	protected $fillable=['name','website','org_type','address','town','state','zipcode','country','telephone','checked_out'];
-	
+
+    protected $attributes = [
+        'checked_out' => 0,
+    ];
 	public function users()
 	{
-		return $this->hasMany('App\User');
+		return $this->hasMany('App\Models\User');
 	}
 	public function invoices()
 	{
-		return $this->hasMany('App\Invoice');
+		return $this->hasMany('App\Models\Invoice');
 	}
 	public function admin()
 	{
