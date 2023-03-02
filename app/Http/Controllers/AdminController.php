@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Group;
-use App\Currency;
-use App\User;
-use App\Invoice;
-use App\Http\Controllers\Controller;
-use Mail;
+use App\Models\Group;
+use App\Models\Invoice;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Swift_TransportException;
 use Illuminate\Support\Facades\Log;
+use Mail;
 use Storage;
+use Swift_TransportException;
 
 class AdminController extends Controller
 {
@@ -49,7 +47,7 @@ class AdminController extends Controller
 		$invoice = Invoice::where('mollie_uid', $uid)->first();
 		return Storage::download($invoice->receiptFile());
 	}
-	
+
 	public function payInvoiceConfirm($id) {
 		$invoice = Invoice::find($id);
 		return view('admin.invoice_confirm', compact('invoice'));
@@ -83,4 +81,4 @@ class AdminController extends Controller
 		return redirect()->route('admin.invoices');
 	}
 }
-	
+

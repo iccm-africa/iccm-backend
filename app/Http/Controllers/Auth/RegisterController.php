@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\RegistrableTrait;
-use App\User;
-use App\Accommodation;
-use App\Group;
-use App\Product;
-use App\Currency;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\RegistrableTrait;
+use App\Models\Accommodation;
+use App\Models\Currency;
+use App\Models\Product;
+use App\Services\UserRegistration;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -28,7 +25,6 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
-    use RegistrableTrait;
 
 
     /**
@@ -43,7 +39,7 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(protected UserRegistration $registration)
     {
         $this->middleware('guest');
 		$this->redirectTo = route('group');
@@ -90,14 +86,13 @@ class RegisterController extends Controller
      *
      * @param array $data
      *
-     * @return \App\User
+     * @return \App\Models\User
      * @throws \Exception
      */
     protected function create(array $data)
     {
 		$accommodation = Accommodation::find($data['accommodation']);
-        $group = $this->getGroup($data);
-        $user = $this->registerUser($data, 'groupadmin', $group);
+        $user = $this->registration->registerUser($data, 'groupadmin');
         return $user;
     }
 }

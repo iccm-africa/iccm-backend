@@ -1,39 +1,42 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
-use App\Accommodation;
-use App\Group;
-use App\User;
+use App\Models\Accommodation;
+use App\Models\Group;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-trait RegistrableTrait {
-
+class UserRegistration
+{
     /**
      * Register a new user.
      *
      * @param \Illuminate\Http\Request $request
-     * @param string                   $param
+     * @param string $param
      *
-     * @return \App\User
+     * @return \App\Models\User
      * @throws \Exception
      */
-    public function registerUser(array $data, string $role, Group $group): User {
-
+    public function registerUser(array $data, string $role, ?Group $group=NULL): User
+    {
+        if (!$group) {
+            $group = $this->getGroup($data);
+        }
         $accommodation = Accommodation::find($data['accommodation']);
         $user = new User;
         $user->fill([
-            'name'      => $data['name'],
-            'lastname'  => $data['lastname'],
-            'nickname'  => $data['nickname'],
-            'passport'  => $data['passport'],
-            'gender'    => $data['gender'],
+            'name' => $data['name'],
+            'lastname' => $data['lastname'],
+            'nickname' => $data['nickname'],
+            'passport' => $data['passport'],
+            'gender' => $data['gender'],
             'residence' => $data['residence'],
-            'email'     => $data['email'],
-            'mail_id'   => bin2hex(random_bytes(8)),
-            'password'  => Hash::make($data['password']),
-            'role'      => $role,
+            'email' => $data['email'],
+            'mail_id' => bin2hex(random_bytes(8)),
+            'password' => Hash::make($data['password']),
+            'role' => $role,
         ]);
         $user->accommodation()->associate($accommodation);
         $keys = array_keys($data);
@@ -52,7 +55,13 @@ trait RegistrableTrait {
         return $user;
     }
 
-    public function form_validate($request){
+    /**
+     * Validate the form.
+     *
+     * @param \Illuminate\Http\Request $request
+     */
+    public function form_validate($request): void
+    {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
@@ -67,21 +76,23 @@ trait RegistrableTrait {
     /**
      * @param array $data
      *
-     * @return \App\Group
+     * @return \App\Models\Group
      */
-    public function getGroup(array $data): Group {
+    public function getGroup(array $data): Group
+    {
         $group = new Group;
         $group->fill([
-            'name'      => $data['organisation'],
-            'website'   => $data['website'],
-            'org_type'  => $data['orgtype'] == 'other' ? $data['orgtypeother'] : $data['orgtype'],
-            'address'   => $data['address'],
-            'town'      => $data['town'],
-            'state'     => $data['state'],
-            'zipcode'   => $data['zipcode'],
-            'country'   => $data['country'],
+            'name' => $data['organisation'],
+            'website' => $data['website'],
+            'org_type' => $data['orgtype'] == 'other' ? $data['orgtypeother'] : $data['orgtype'],
+            'address' => $data['address'],
+            'town' => $data['town'],
+            'state' => $data['state'],
+            'zipcode' => $data['zipcode'],
+            'country' => $data['country'],
             'telephone' => $data['telephone'],
         ]);
+
         return $group;
     }
 }

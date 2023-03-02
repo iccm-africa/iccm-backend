@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Currency;
-use App\Group;
-use App\Invoice;
-use App\PaymentMethod;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Mollie\Laravel\Facades\Mollie;
 
 class CheckoutController extends Controller
@@ -73,13 +71,13 @@ class CheckoutController extends Controller
 		$invoice = Invoice::forGroup($group, $method);
 
 		$url = $this->mollie_pay($invoice);
-		
+
 		DB::transaction(function() use ($group, $invoice) {
 			$group->push(); // checked_out=true on group and users
 			$group->invoices()->save($invoice);
 			$invoice->genInvoicePDF();
 		});
-		
+
 		return redirect($url, 303);
 	}
 	/*
@@ -91,16 +89,16 @@ class CheckoutController extends Controller
 			abort(403);
 
 		$url = $this->mollie_pay($invoice);
-		
+
 		$invoice->save(); // A new mollie ID has been assigned
-		
+
 		return redirect($url, 303);
 	}
 	/*
 	 * The actual Mollie code
 	 * You need to set the uid on the invoice before calling this
 	 * You need to save the invoice after calling this
-	 * 
+	 *
 	 * Return value: redirect to payment portal
 	 */
 	private function mollie_pay($invoice) {
@@ -113,10 +111,10 @@ class CheckoutController extends Controller
 //			'webhookUrl' => route('mollie_webhook'),
 			'redirectUrl' => route('mollie_redirect', ['uid' => $invoice->mollie_uid]),
 		]);
-		
+
 		$invoice->mollie_id = $payment->id;
 		$invoice->mollie_status = $payment->status;
-		
+
 		return $payment->getCheckoutUrl();
 	}
 	public function mollieRedirect($uid) {
@@ -130,4 +128,4 @@ class CheckoutController extends Controller
 		return redirect()->route('group', ['uid' => $uid], 303);
 	}
 }
-	
+
