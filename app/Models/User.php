@@ -1,10 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -43,19 +42,19 @@ class User extends Authenticatable
 	];
     public function accommodation()
     {
-        return $this->belongsTo('App\Accommodation');
+        return $this->belongsTo('App\Models\Accommodation');
     }
     public function products()
     {
-        return $this->belongsToMany('App\Product');
+        return $this->belongsToMany('App\Models\Product');
     }
     public function group()
     {
-		return $this->belongsTo('App\Group');
+		return $this->belongsTo('App\Models\Group');
 	}
 	public function postregistration()
 	{
-		return $this->hasOne('App\Postregistration');
+		return $this->hasOne('App\Models\Postregistration');
 	}
 	public function cost()
 	{

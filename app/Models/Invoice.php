@@ -1,11 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use App\Currency;
-use PDF;
-use Storage;
 use Illuminate\Database\Eloquent\Model;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Illuminate\Support\Facades\Storage;
 
 class Invoice extends Model
 {
@@ -16,10 +15,10 @@ class Invoice extends Model
     ];
 	public function group()
 	{
-		return $this->belongsTo('App\Group');
+		return $this->belongsTo('App\Models\Group');
 	}
 	public function method() {
-		return $this->belongsTo('App\PaymentMethod');
+		return $this->belongsTo('App\Models\PaymentMethod');
 	}
 	public function getCurrency()
 	{
@@ -63,14 +62,14 @@ class Invoice extends Model
 
 		return $invoice;
 	}
-	
+
 	public function genInvoicePDF() {
 		$groupadmin = $this->group->admin();
 		$def = Currency::def();
 	    $pdf = PDF::loadView('invoice', ['invoice' => $this, 'groupadmin' => $groupadmin, 'def' => $def ]);
         Storage::disk('local')->put($this->invoiceFile(), $pdf->output());
 	}
-	
+
 	public function genReceiptPDF() {
 		$groupadmin = $this->group->admin();
 		$def = Currency::def();
@@ -85,7 +84,7 @@ class Invoice extends Model
 	public function receiptFile() {
 		return $this->mollie_uid . "_receipt.pdf";
 	}
-	
+
 	private static function invoiceNumber() {
 		$highest = self::orderBy('number', 'desc')->first();
 		if ($highest == null)

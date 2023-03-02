@@ -1,11 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Postregistration extends Model
 {
@@ -13,7 +11,7 @@ class Postregistration extends Model
 
 	public function user()
  	{
-          return $this->belongsTo('App\User');
+          return $this->belongsTo('App\Models\User');
     }
 
     /**
