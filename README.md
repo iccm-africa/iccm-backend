@@ -30,8 +30,10 @@ php artisan key:generate
 php artisan migrate
 # load sample data
 mysql -u <username> <dbname> -p < database/database-example.sql
+mysql -u <username> <dbname> -p < database/payment-methods.sql
 # update the admin user with email address and valid password
 php artisan tinker --execute="\$user = User::where('name', 'admin')->first();\$user->password = Hash::make('NOT_TopSecret1234');\$user->email = 'admin@example.org';\$user->save();"
+php artisan serve
 ```
 
 Upgrade Laravel version
