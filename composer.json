@@ -6,10 +6,11 @@
         "framework",
         "laravel"
     ],
-    "license": "MIT",
+    "license": "GNU AGPLv3",
     "require": {
         "php": "^8.1",
         "barryvdh/laravel-dompdf": "^2.0",
+        "darkaonline/l5-swagger": "^8.5",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^9.0",

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Services\GroupRegistrationService;

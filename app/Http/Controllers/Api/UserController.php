@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\GroupRegistrationService;
@@ -10,6 +9,7 @@ use App\Services\UserRegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Annotations as OA;
 
 class UserController extends Controller
 {
@@ -25,6 +25,29 @@ class UserController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
+     * @OA\Get(
+     *      path="/users",
+     *      operationId="getUsersList",
+     *      tags={"Users"},
+     *      summary="Get list of users",
+     *      description="Returns list of users",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     *          ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
