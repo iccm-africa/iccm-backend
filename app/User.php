@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -36,25 +36,25 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
+    
     protected $attributes = [
 		'role' => 'participant',
 	];
     public function accommodation()
     {
-        return $this->belongsTo('App\Models\Accommodation');
+        return $this->belongsTo('App\Accommodation');
     }
     public function products()
     {
-        return $this->belongsToMany('App\Models\Product');
+        return $this->belongsToMany('App\Product');
     }
     public function group()
     {
-		return $this->belongsTo('App\Models\Group');
+		return $this->belongsTo('App\Group');
 	}
 	public function postregistration()
 	{
-		return $this->hasOne('App\Models\Postregistration');
+		return $this->hasOne('App\Postregistration');
 	}
 	public function cost()
 	{

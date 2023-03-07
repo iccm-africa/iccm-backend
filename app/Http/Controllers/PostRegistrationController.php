@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Postregistration;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use App\Postregistration;
+use App\Mail\UpdateMail;
 use Mail;
+use App\User;
+use App\Group;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Swift_TransportException;
+use Illuminate\Support\Facades\Log;
 
 class PostRegistrationController extends Controller
 {
@@ -20,9 +23,9 @@ class PostRegistrationController extends Controller
 			return view('postregistration.edit')->with('post', $post)->with('mail_id', $mail_id);
 		return view ('postregistration.create')->with('mail_id', $mail_id);
 	}
-
+	
 	public function form_validate($request){
-
+			
 			$data = $request->validate([
 			'share_acco' 		=> 'string|nullable',
 			'traveling'  		=> 'string',
@@ -45,15 +48,15 @@ class PostRegistrationController extends Controller
 			'speakers' 			=> 'string|nullable',
 			'help_iccm' 		=> 'string|nullable'
 		]);
-
+		
 		return $data;
-
+		
 	}
-
+	
 	public function store(Request $request) {
-
+		
 		$data = $this->form_validate($request);
-
+		
 		$data = $request->all();
 		$form = new Postregistration;
 		$form->fill($data);
@@ -64,13 +67,13 @@ class PostRegistrationController extends Controller
 			$form->ticket_path = $ticket->store('tickets');
 		}
 
-		$user->postregistration()->save($form);
-
+		$user->postregistration()->save($form); 
+		
 		return redirect()->route('thanks-post');
 	}
-
+	
 	public function update(Request $request, $id) {
-
+		
 		$data = $this->form_validate($request);
 		$data = $request->all();
 		$user = User::where('mail_id', $id)->first();
@@ -103,7 +106,7 @@ class PostRegistrationController extends Controller
 	public function file($path){
 		if (strpos($path, 'tickets/') !== 0)
 			abort(404);
-
+		
 		return Storage::download($path);
 	}
 }
