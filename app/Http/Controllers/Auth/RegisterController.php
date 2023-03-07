@@ -54,34 +54,6 @@ class RegisterController extends Controller
 	}
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'passport' => ['required', 'string', 'max:255'],
-            'gender' => ['required'],
-            'residence' => ['required', 'string', 'max:255'],
-            'organisation' => ['required', 'string', 'max:255'],
-            'orgtype' => ['required', 'string', 'max:255'],
-            'orgtypeother' => $data['orgtype'] == 'other'? ['required', 'string', 'max:255'] : '',
-            'address' => ['required', 'string', 'max:255'],
-            'town' => ['required', 'string', 'max:255'],
-            'zipcode' => ['required', 'string', 'max:255'],
-            'country' => ['required', 'string', 'max:255'],
-            'telephone' => ['required', 'string', 'max:255'],
-            'accommodation' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
-
-    /**
      * Create a new user instance after a valid registration.
      *
      * @param array $data

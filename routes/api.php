@@ -26,7 +26,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/groups', GroupController::class);
 });
 
-Route::post('/users/register', 'UserController@register');
+Route::post('/users/register', 'Api\UserController@register');
 Route::post('/login', 'Auth\ApiLoginController@login');
 
 

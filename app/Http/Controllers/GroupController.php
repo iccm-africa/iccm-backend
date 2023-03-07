@@ -70,7 +70,6 @@ class GroupController extends Controller
      */
     public function saveUser(Request $request)
     {
-        $this->registration->form_validate($request);
         $data = $request->all();
         $group = Auth::user()->group;
         $this->registration->registerUser($data, 'participant', $group);
@@ -98,18 +97,4 @@ class GroupController extends Controller
         return Storage::download($invoice->receiptFile());
     }
 
-
-
-    /**
-     * Validate the form
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
-     */
-    public function form_validate($request)
-    {
-        $this->registration->form_validate($request);
-    }
 }
