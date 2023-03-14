@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class Postregistration extends Model
+class PostRegistration extends Model
 {
     use Notifiable;
 

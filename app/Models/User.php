@@ -54,7 +54,7 @@ class User extends Authenticatable
 	}
 	public function postregistration()
 	{
-		return $this->hasOne('App\Models\Postregistration');
+		return $this->hasOne('App\Models\PostRegistration');
 	}
 	public function cost()
 	{

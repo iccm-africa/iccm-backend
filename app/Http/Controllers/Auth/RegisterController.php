@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\RegistrableTrait;
 use App\Models\Accommodation;
 use App\Models\Currency;
 use App\Models\Product;
-use App\Services\UserRegistration;
+use App\Services\GroupRegistrationService;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -39,7 +37,7 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct(protected UserRegistration $registration)
+    public function __construct(protected GroupRegistrationService $registration)
     {
         $this->middleware('guest');
 		$this->redirectTo = route('group');
@@ -64,7 +62,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 		$accommodation = Accommodation::find($data['accommodation']);
-        $user = $this->registration->registerUser($data, 'groupadmin');
+        $user = $this->registration->registerGroup($data, 'groupadmin');
         return $user;
     }
 }

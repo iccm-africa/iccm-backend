@@ -5,18 +5,23 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
+use App\Services\GroupRegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class GroupController extends Controller
 {
+    public function __construct(protected GroupRegistrationService $groupRegistration)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         if ($request->user()->role == 'admin') {
             return GroupResource::collection(Group::all())->response();
@@ -34,7 +39,7 @@ class GroupController extends Controller
      */
     public function store(Request $request): Response
     {
-        abort(400, 'You can only create groups on registration');
+        abort(400, 'You can only create groups via user registration');
     }
 
     /**
@@ -56,15 +61,17 @@ class GroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Group  $group
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Group $group
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, Group $group): JsonResponse
     {
         if ($request->user()->role == 'admin' ||
             $request->user()->role == 'groupadmin' && $request->user()->group_id == $group->id) {
-            $group->update($request->all());
+            $date = $this->groupRegistration->validateOnUpdate($request->all());
+            $group->update($date);
             return (new GroupResource($group))->response();
         }
         else {

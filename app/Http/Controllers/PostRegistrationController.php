@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Postregistration;
 use App\Models\User;
+use App\Services\PostRegistrationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Swift_TransportException;
 
 class PostRegistrationController extends Controller
 {
-	public function openMail($mail_id) {
+
+    public function __construct(protected PostRegistrationService $postregistration)
+    {
+    }
+
+    public function openMail($mail_id) {
 		$user = User::where('mail_id', $mail_id)->first();
 		if (!$user)
 			abort(404);
@@ -21,58 +26,25 @@ class PostRegistrationController extends Controller
 		return view ('postregistration.create')->with('mail_id', $mail_id);
 	}
 
-	public function form_validate($request){
-
-			$data = $request->validate([
-			'share_acco' 		=> 'string|nullable',
-			'traveling'  		=> 'string',
-			'share_travelplans' => 'string|nullable',
-			'emergency_name' 	=> 'string',
-			'emergency_phone' 	=> 'string',
-			'emergency_country' => 'string',
-			'dietprefs' 		=> 'string|nullable',
-			'shirtsize' 		=> 'string',
-			'iccmelse' 			=> 'string|nullable',
-  			'iccmelse_lastyear' => 'string|nullable',
-			'iccmlocation' 		=> 'string|nullable',
-			'knowiccm' 			=> 'string|nullable',
-			'experince_itman' 	=> 'string|nullable',
-			'expert_itman' 		=> 'string|nullable',
-			'learn_itman' 		=> 'string|nullable',
-			'tech_impl' 		=> 'string|nullable',
-			'new_tech' 			=> 'string|nullable',
-			'help_worship' 		=> 'string|nullable',
-			'speakers' 			=> 'string|nullable',
-			'help_iccm' 		=> 'string|nullable'
-		]);
-
-		return $data;
-
-	}
-
 	public function store(Request $request) {
 
-		$data = $this->form_validate($request);
+        $data = $request->all();
+        $user = User::where('mail_id', $data['mail_id'])->first();
 
-		$data = $request->all();
-		$form = new Postregistration;
-		$form->fill($data);
+        $form = $this->postregistration->createPostRegistration($data, $user);
 
-		$user = User::where('mail_id', $data['mail_id'])->first();
 		$ticket = $request->file('ticket');
 		if ($ticket) {
 			$form->ticket_path = $ticket->store('tickets');
 		}
-
-		$user->postregistration()->save($form);
 
 		return redirect()->route('thanks-post');
 	}
 
 	public function update(Request $request, $id) {
 
-		$data = $this->form_validate($request);
-		$data = $request->all();
+		$data = $this->postregistration->validateOnCreate($request->all());
+
 		$user = User::where('mail_id', $id)->first();
 		$form = $user->postregistration;
 		$form->fill($data);

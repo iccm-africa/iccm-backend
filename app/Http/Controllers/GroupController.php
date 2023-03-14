@@ -6,7 +6,7 @@ use App\Models\Accommodation;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Services\UserRegistration;
+use App\Services\UserRegistrationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,9 +16,9 @@ class GroupController extends Controller
     /**
      * UserController constructor.
      *
-     * @param \App\Services\UserRegistration $registration
+     * @param \App\Services\UserRegistrationService $registration
      */
-    public function __construct(protected UserRegistration $registration)
+    public function __construct(protected UserRegistrationService $registration)
     {
         $this->middleware('auth');
     }

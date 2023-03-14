@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Services\UserRegistration;
+use App\Services\GroupRegistrationService;
+use App\Services\UserRegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +16,10 @@ class UserController extends Controller
     /**
      * UserController constructor.
      *
-     * @param \App\Services\UserRegistration $registration
+     * @param \App\Services\UserRegistrationService $userRegistration
+     * @param \App\Services\GroupRegistrationService $groupRegistration
      */
-    public function __construct(protected UserRegistration $registration)
+    public function __construct(protected UserRegistrationService $userRegistration, protected GroupRegistrationService $groupRegistration)
     {
     }
 
@@ -53,11 +55,11 @@ class UserController extends Controller
         $data = $request->all();
         if ($request->user()->role == 'admin') {
             $group = $data['group_id'];
-            $user = $this->registration->registerUser($data, 'participant', $group);
+            $user = $this->userRegistration->registerUser($data, 'participant', $group);
         }
         elseif ($request->user()->role == 'groupadmin') {
             $group = Auth::user()->group;
-            $user = $this->registration->registerUser($data, 'participant', $group);
+            $user = $this->userRegistration->registerUser($data, 'participant', $group);
         }
         else {
             abort(401, 'You are not allowed to create new users');
@@ -76,8 +78,7 @@ class UserController extends Controller
     public function register(Request $request): JsonResponse
     {
         $data = $request->all();
-        $group = $this->registration->getGroup($data);
-        $user = $this->registration->registerUser($data, 'groupadmin', $group);
+        $user = $this->groupRegistration->registerGroup($data, 'groupadmin');
 
         return (new UserResource($user))->response();
     }
@@ -113,7 +114,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): JsonResponse
     {
-        $data = $this->registration->validateOnUserUpdate($request->all());
+        $data = $this->userRegistration->validateOnUpdate($request->all());
         if ($request->user()->role == 'admin' || $request->user()->id == $user->id) {
             $user->update($data);
         }
