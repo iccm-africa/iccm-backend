@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +10,6 @@ class Product extends Model
 	protected $fillables=['name','description','cost'];
 	public function participants()
 	{
-		return $this->belongsToMany('App\Models\User');
+		return $this->belongsToMany('App\User');
 	}
 }

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use App\User;
+use App\Group;
+use App\Invoice;
 use Mail;
 use Swift_TransportException;
+use Illuminate\Support\Facades\Log;
 
 class ReminderController extends Controller
 {
@@ -31,16 +34,16 @@ class ReminderController extends Controller
 				if(config('app.env')=='local')
 					sleep(5);
 			}
-		}
+		}	
 	}
 
 	public function checkout() {
 		$admins = User::where('role','groupadmin')->orWhere('role', 'admin')->get();
-
+		
 		foreach($admins as $admin) {
-			$u = $admin->group->users()->where("checked_out", false)->get(); #check if create date is older then 30min to prevent reminder during checkout
-
-			if(count($u) > 0 ) {
+			$u = $admin->group->users()->where("checked_out", false)->get(); #check if create date is older then 30min to prevent reminder during checkout			
+		
+			if(count($u) > 0 ) {	
 				try {
 					Mail::send('emails.checkoutreminder', ['admin' => $admin, 'users' => $u], function ($m) use ($u, $admin) {
 						$m->from(env('MAIL_FROM', 'noreply@iccm-africa.org'), env('APP_NAME','ICCM-Africa'));
@@ -60,7 +63,7 @@ class ReminderController extends Controller
 	public function invoices() {
 
 		$admins = User::where('role','groupadmin')->orWhere('role', 'admin')->get();
-
+		
 		foreach($admins as $admin) {
 			$open_bank = $admin->group->invoices()->where('paid', false)->whereHas('method', function($q) {
 				$q->where('type', 'bank'); // query on payment method

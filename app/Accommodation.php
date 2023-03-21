@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +10,6 @@ class Accommodation extends Model
 	protected $fillable=['name','description','cost'];
 	public function users()
 	{
-		return $this->hasMany('App\Models\User');
+		return $this->hasMany('App\User');
 	}
 }
