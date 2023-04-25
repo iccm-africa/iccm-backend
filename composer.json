@@ -64,6 +64,9 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "generate-docs": [
+            "php artisan l5-swagger:generate"
         ]
     }
 }

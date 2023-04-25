@@ -8,7 +8,34 @@ use App\Services\GroupRegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use OpenApi\Annotations as OA;
 
+/**
+ *
+ * @OA\Get(
+ *      path="/api/groups",
+ *      operationId="getGroupsList",
+ *      tags={"Groups"},
+ *      summary="Get list of Groups",
+ *      description="Returns list of Groups",
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(
+ *              @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Group")),
+ *          ),
+ *       ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Forbidden"
+ *      )
+ *     )
+ *
+ */
 class GroupController extends Controller
 {
     public function __construct(protected GroupRegistrationService $groupRegistration)

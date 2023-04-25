@@ -27,7 +27,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *      path="/users",
+     *      path="/api/users",
      *      operationId="getUsersList",
      *      tags={"Users"},
      *      summary="Get list of users",

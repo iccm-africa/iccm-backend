@@ -9,19 +9,26 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(
- *     required={"password"},
+ *     required={"password, email, accommodation_id, name, lastname"},
  *     @OA\Xml(name="User"),
  *     @OA\Property(property="id", type="integer", readOnly="true", example="1"),
- *     @OA\Property(property="role", type="string", readOnly="true", description="User role"),
- *     @OA\Property(property="email", type="string", readOnly="true", format="email", description="User unique email address", example="user@gmail.com"),
- *     @OA\Property(property="email_verified_at", type="string", readOnly="true", format="date-time", description="Datetime marker of verification status", example="2019-02-25 12:59:20"),
  *     @OA\Property(property="name", type="string", maxLength=255, example="John"),
+ *     @OA\Property(property="email", type="string", format="email", description="User unique email address", example="user@gmail.com"),
+ *     @OA\Property(property="email_verified_at", type="string", readOnly="true", format="date-time", description="Datetime marker of verification status", example="2019-02-25 12:59:20"),
+ *     @OA\Property(property="role", type="string", description="User role"),
+ *     @OA\Property(property="created_at", type="string", format="date-time", readOnly="true", example="2018-11-03 12:00:00"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", readOnly="true", example="2018-11-03 12:00:00"),
+ *     @OA\Property(property="acoomodation_id", type="int", example="1"),
+ *     @OA\Property(property="group_id", type="int", example="3"),
  *     @OA\Property(property="lastname", type="string", maxLength=255, example="Doe"),
  *     @OA\Property(property="nickname", type="string", maxLength=255, example="Johny"),
- *     @OA\Property(property="passport", type="string", maxLength=32, example="123456789"),
+ *     @OA\Property(property="passport", type="string", maxLength=255, description="Name on passport", example=""),
  *     @OA\Property(property="gender", type="string", maxLength=1, example="m"),
- *     @OA\Property(property="residence", type="string", maxLength=255, example="Vilnius"),
+ *     @OA\Property(property="residence", type="string", maxLength=255, description="Country of residence", example="Vilnius"),
+ *     @OA\Property(property="mail_id", type="string", maxLength=16, description="Mail ID sent to access post registration", example="0cbd149a0c15b38f"),
+ *     @OA\Property(property="checked_out", type="int", example="0"),
  * )
+ *
  */
 class User extends Authenticatable
 {
