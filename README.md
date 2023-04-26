@@ -12,8 +12,8 @@ Architecture
 This software is written in Laravel.
 The long-term goal is to have a client written separately, that communicates with this backend.
 
-### API
-A basic API is already implemented providing the following endpoints:
+### API (new)
+A basic API is now availble providing the following endpoints:
 - `/api/users`
 - `/api/groups`
 - `/api/postregistrations`
@@ -21,6 +21,10 @@ A basic API is already implemented providing the following endpoints:
 The API is protected by a token, which is generated on login after the user has been authenticated using `/api/login`
 
 A new user can be registered by sending a POST request to `/api/users/register`.
+
+A full documentation and Test UI of the API can be found at `/api/documentation`.
+
+For this, first run `php artisan l5-swagger:generate` or `composer generate-docs` to generate the documentation.
 
 Setup of Development Environment
 --------------------------------
@@ -84,9 +88,12 @@ composer install
 Hints for Developers
 --------------------
 
-* The models are defined in `app`, eg. `app/Group.php`
+* The models are defined in `app/Models`, eg. `app/Models/Group.php`
 * The views are defined in `resources/views/`, eg. `about.blade.php` and `auth/register.blade.php`
 * You find the controllers in `app/Http/Controllers/`, eg. `GroupController.php` and `AdminController.php`
+* PHP CS Fixer can be used to format the code according to PSR-12. You can run it with `composer cs-fix FILE/DIR` after installing the dependencies with `composer cs-fix-install`. The dependencies are installed to `tools/php-cs-fixer` to avoid conflicts with other projects.
+* `composer cs-fix-annotations` will reformat the annotations in the code. 
+* Don't forget to disable debugging for production by setting `APP_DEBUG=false` and `APP_ENV=production` in `.env`.
 
 License
 -------
