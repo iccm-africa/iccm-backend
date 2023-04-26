@@ -80,6 +80,22 @@ class UserController extends Controller
      *     summary="Create a new user and add it to your group",
      *     description="If you are admin you can create a user within any group. If you are a groupadmin you can create
                a user within your group. As a participant you can not create a new user.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Registration details",
+     *         @OA\JsonContent(
+     *             required={"email", "accommodation_id", "name", "lastname", "residence"},
+     *             @OA\Property(property="name",              type="string", maxLength=255, example="Bob"),
+     *             @OA\Property(property="email",             type="string", format="email", description="User unique email address", example="user2@gmail.com"),
+     *             @OA\Property(property="password",          type="string", maxLength=255, example="test12345"),
+     *             @OA\Property(property="password_confirmation",           type="string", maxLength=255, example="test12345"),
+     *             @OA\Property(property="lastname",          type="string", maxLength=255, example="Miller"),
+     *             @OA\Property(property="nickname",          type="string", maxLength=255, example=""),
+     *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
+     *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
+     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
+     *            ),
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -161,10 +177,6 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=400,
      *         description="Bad request, validation failed"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
      *     )
      * )
      *
@@ -180,8 +192,6 @@ class UserController extends Controller
             $user = $this->groupRegistration->registerGroup($data, 'groupadmin');
         } catch (ValidationException $e) {
             abort(400, $e->getMessage());
-        } catch (\Exception $e) {
-            abort(500, $e->getMessage());
         }
         return (new UserResource($user))->response();
     }
@@ -231,7 +241,102 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Patch(
+     *     path="/api/users/{id}",
+     *     operationId="updateUser",
+     *     tags={"Users"},
+     *     security={{"sanctum": {}}},
+     *     summary="Update user",
+     *     description="If you are admin you can update a user within any group. If you are a groupadmin
+    you can update a user within your group. As a participant you can only update your own user.",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/user_id",
+     *     ),
+     *     @OA\RequestBody(
+     *         request="User",
+     *         required=true,
+     *         description="Registration details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name",              type="string", maxLength=255, example="Bob"),
+     *             @OA\Property(property="email",             type="string", format="email", description="User unique email address", example="user2@gmail.com"),
+     *             @OA\Property(property="password",          type="string", maxLength=255, example="test12345"),
+     *             @OA\Property(property="password_confirmation",           type="string", maxLength=255, example="test12345"),
+     *             @OA\Property(property="lastname",          type="string", maxLength=255, example="Miller"),
+     *             @OA\Property(property="nickname",          type="string", maxLength=255, example=""),
+     *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
+     *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
+     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
+     *            ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, validation failed",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, please login first",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you can only edit your own profile or participants from your own group",
+     *     )
+     * )
+     *
+     * @OA\Put(
+     *     path="/api/users/{id}",
+     *     operationId="replaceUser",
+     *     tags={"Users"},
+     *     security={{"sanctum": {}}},
+     *     summary="Update User",
+     *     description="If you are admin you can update a user within any group. If you are a groupadmin
+               you can update a user within your group. As a participant you can only update your own user.",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/user_id",
+     *     ),
+     *     @OA\RequestBody(
+     *         request="User",
+     *         required=true,
+     *         description="Registration details",
+     *         @OA\JsonContent(
+     *             required={"email", "accommodation_id", "name", "lastname", "residence"},
+     *             @OA\Property(property="name",              type="string", maxLength=255, example="Bob"),
+     *             @OA\Property(property="email",             type="string", format="email", description="User unique email address", example="user2@gmail.com"),
+     *             @OA\Property(property="password",          type="string", maxLength=255, example="test12345"),
+     *             @OA\Property(property="password_confirmation",           type="string", maxLength=255, example="test12345"),
+     *             @OA\Property(property="lastname",          type="string", maxLength=255, example="Miller"),
+     *             @OA\Property(property="nickname",          type="string", maxLength=255, example=""),
+     *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
+     *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
+     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
+     *            ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, validation failed",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, please login first",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you can only edit your own profile or participants from your own group",
+     *     )
+     * )
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\User         $user
@@ -241,19 +346,50 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): JsonResponse
     {
-        $data = $this->userRegistration->validateOnUpdate($request->all());
+        try {
+            $data = $this->userRegistration->validateOnUpdate($request->all());
+        } catch (ValidationException $e) {
+            abort(400, $e->getMessage());
+        }
         if ($request->user()->role == 'admin' || $request->user()->id == $user->id) {
             $user->update($data);
         } elseif ($request->user()->role == 'groupadmin' && $request->user()->group_id == $user->group_id) {
             $user->update($data);
         } else {
-            abort(401, 'You can only edit your own profile');
+            abort(403, 'You can only edit your own profile or participants from your own group');
         }
         return (new UserResource($user))->response();
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/users/{id}",
+     *     operationId="deleteUser",
+     *     tags={"Users"},
+     *     security={{"sanctum": {}}},
+     *     summary="Delete user",
+     *     description="If you are admin you can delete a user within any group. If you are a groupadmin
+    you can delete any user within your group. As a participant you can not delete your own user.",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/user_id",
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, please check the error message",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, please login first",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you can only delete users from your own group",
+     *     )
+     * )
      *
      * @param \App\Models\User $user
      *
@@ -271,7 +407,7 @@ class UserController extends Controller
         } elseif ($request->user()->role == 'groupadmin' && $request->user()->group_id == $user->group_id) {
             $user->delete();
         } else {
-            abort(401, 'You can only delete users from your own group');
+            abort(403, 'You can only delete users from your own group');
         }
         return response()->json(null, 204);
     }
