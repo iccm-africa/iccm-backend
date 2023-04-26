@@ -13,3 +13,5 @@ yarn-error.log
 composer.lock
 yarn.lock
 /storage/api-docs/api-docs.json
+/tools/php-cs-fixer/vendor
+.php-cs-fixer.cache

@@ -26,7 +26,8 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "squizlabs/php_codesniffer": "*"
     },
     "config": {
         "optimize-autoloader": true,
@@ -67,6 +68,18 @@
         ],
         "generate-docs": [
             "php artisan l5-swagger:generate"
+        ],
+        "cs-fix-install": [
+            "composer --working-dir=tools/php-cs-fixer install --no-interaction --no-progress --no-scripts"
+        ],
+        "cs-fix": [
+            "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --rules=@PSR12,@DoctrineAnnotation"
+        ],
+        "cs-fix-annotations": [
+            "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --rules=@DoctrineAnnotation app"
+        ],
+        "cs-fix-all": [
+            "@cs-fix app"
         ]
     }
 }

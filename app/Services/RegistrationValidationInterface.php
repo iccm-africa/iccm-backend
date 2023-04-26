@@ -7,7 +7,7 @@ interface RegistrationValidationInterface
     /**
      * Validate registration request.
      *
-     * @param array $data
+     * @param  array $data
      * @return array
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -16,7 +16,7 @@ interface RegistrationValidationInterface
     /**
      * Validate registration request.
      *
-     * @param array $data
+     * @param  array $data
      * @return array
      * @throws \Illuminate\Validation\ValidationException
      */

@@ -11,32 +11,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 
-/**
- *
- * @OA\Get(
- *      path="/api/postregistrations",
- *      operationId="getPostRegistrationsList",
- *      tags={"PostRegistrations"},
- *      summary="Get list of PostRegistrations",
- *      description="Returns list of PostRegistrations",
- *      @OA\Response(
- *          response=200,
- *          description="Successful operation",
- *          @OA\JsonContent(
- *              @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/PostRegistration")),
- *          ),
- *       ),
- *      @OA\Response(
- *          response=401,
- *          description="Unauthenticated",
- *      ),
- *      @OA\Response(
- *          response=403,
- *          description="Forbidden"
- *      )
- *     )
- *
- */
 class PostRegistrationController extends Controller
 {
     /**
@@ -51,7 +25,31 @@ class PostRegistrationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @OA\Get(
+     *     path="/api/postregistrations",
+     *     operationId="getPostRegistrationsList",
+     *     tags={"PostRegistrations"},
+     *     security={{"sanctum": {}}},
+     *     summary="Get post registration form data",
+     *     description="Returns data submitted by users through the post registration form, which they receive after signing up for an event.",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/PostRegistration")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     )
+     * )
+     *
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
@@ -59,19 +57,23 @@ class PostRegistrationController extends Controller
         if ($request->user()->role == 'admin') {
             return PostRegistrationResource::collection(PostRegistration::all())->response();
         } else {
-            return PostRegistrationResource::collection(PostRegistration::WhereHas('user', function (Builder $query) use
-            (
-                $request
-            ) {
-                $query->where('id', '=', $request->user()->id);
-            })->get())->response();
+            return PostRegistrationResource::collection(
+                PostRegistration::WhereHas(
+                    'user',
+                    function (Builder $query) use (
+                        $request
+                    ) {
+                        $query->where('id', '=', $request->user()->id);
+                    }
+                )->get()
+            )->response();
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
@@ -89,8 +91,8 @@ class PostRegistrationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\PostRegistration $postregistration
+     * @param  \Illuminate\Http\Request     $request
+     * @param  \App\Models\PostRegistration $postregistration
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, PostRegistration $form): JsonResponse
@@ -105,8 +107,8 @@ class PostRegistrationController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\PostRegistration $postregistration
+     * @param  \Illuminate\Http\Request     $request
+     * @param  \App\Models\PostRegistration $postregistration
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -126,8 +128,8 @@ class PostRegistrationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\PostRegistration $postregistration
+     * @param  \Illuminate\Http\Request     $request
+     * @param  \App\Models\PostRegistration $postregistration
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, PostRegistration $postregistration): \Illuminate\Http\Response

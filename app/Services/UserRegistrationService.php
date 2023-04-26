@@ -15,7 +15,7 @@ class UserRegistrationService implements RegistrationValidationInterface
      * Register a new user.
      *
      * @param \Illuminate\Http\Request $request
-     * @param string $param
+     * @param string                   $param
      *
      * @return \App\Models\User
      * @throws \Exception
@@ -24,8 +24,9 @@ class UserRegistrationService implements RegistrationValidationInterface
     {
         $data = $this->validateOnCreate($data);
         $accommodation = Accommodation::find($data['accommodation']);
-        $user = new User;
-        $user->fill([
+        $user = new User();
+        $user->fill(
+            [
             'name' => $data['name'],
             'lastname' => $data['lastname'],
             'nickname' => $data['nickname'],
@@ -35,7 +36,8 @@ class UserRegistrationService implements RegistrationValidationInterface
             'email' => $data['email'],
             'mail_id' => bin2hex(random_bytes(8)),
             'password' => Hash::make($data['password'] ?? bin2hex(random_bytes(8))) // Prevents empty password
-        ]);
+            ]
+        );
         if ($role != 'participant') {
             $user->role = $role;
         }
@@ -47,11 +49,13 @@ class UserRegistrationService implements RegistrationValidationInterface
                 $ids[] = $matches[1];
             }
         }
-        DB::transaction(function () use ($group, $user, $ids) {
-            $group->save();
-            $group->users()->save($user);
-            $user->products()->sync($ids);
-        });
+        DB::transaction(
+            function () use ($group, $user, $ids) {
+                $group->save();
+                $group->users()->save($user);
+                $user->products()->sync($ids);
+            }
+        );
 
         return $user;
     }
@@ -59,13 +63,15 @@ class UserRegistrationService implements RegistrationValidationInterface
     /**
      * Validate add user request.
      *
-     * @param array $data
+     * @param  array $data
      * @return array
      * @throws \Illuminate\Validation\ValidationException
      */
     public function validateOnCreate(array $data): array
     {
-        return Validator::make($data, [
+        return Validator::make(
+            $data,
+            [
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
             'nickname' => ['string', 'max:255'],
@@ -74,19 +80,22 @@ class UserRegistrationService implements RegistrationValidationInterface
             'residence' => ['required', 'string', 'max:255'],
             'accommodation' => 'required',
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        ])->validate();
+            ]
+        )->validate();
     }
 
     /**
      * Validate registration request.
      *
-     * @param array $data
+     * @param  array $data
      * @return array
      * @throws \Illuminate\Validation\ValidationException
      */
     public function validateOnUpdate(array $data): array
     {
-        return Validator::make($data, [
+        return Validator::make(
+            $data,
+            [
             'name' => ['string', 'max:255'],
             'lastname' => ['string', 'max:255'],
             'nickname' => ['string', 'max:255'],
@@ -95,6 +104,7 @@ class UserRegistrationService implements RegistrationValidationInterface
             'residence' => ['string', 'max:255'],
             'email' => ['string', 'email', 'max:255', 'unique:users'],
             'password' => ['string', 'min:8', 'confirmed'],
-        ])->validate();
+            ]
+        )->validate();
     }
 }
