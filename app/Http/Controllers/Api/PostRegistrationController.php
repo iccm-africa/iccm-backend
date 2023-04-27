@@ -16,8 +16,8 @@ use OpenApi\Annotations as OA;
  * @OA\Parameter(
  *     parameter="postregistration_id",
  *     in="path",
- *     name="Post Registration ID",
- *     description="The ID of the Post Registration",
+ *     name="id",
+ *     description="Post Registration ID",
  *     @OA\Schema(
  *         type="integer"
  *     )

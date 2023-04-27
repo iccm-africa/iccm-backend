@@ -15,8 +15,8 @@ use OpenApi\Annotations as OA;
  * @OA\Parameter(
  *     parameter="group_id",
  *     in="path",
- *     name="Group ID",
- *     description="The ID of the group you want to use",
+ *     name="id",
+ *     description="Group ID",
  *     @OA\Schema(
  *         type="integer"
  *     )

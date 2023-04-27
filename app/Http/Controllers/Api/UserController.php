@@ -16,8 +16,8 @@ use OpenApi\Annotations as OA;
  * @OA\Parameter(
  *     parameter="user_id",
  *     in="path",
- *     name="User ID",
- *     description="The ID of the user you want to use",
+ *     name="id",
+ *     description="User ID",
  *     @OA\Schema(
  *         type="integer"
  *     )
