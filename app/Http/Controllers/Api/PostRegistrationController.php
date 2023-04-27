@@ -53,11 +53,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Forbidden"
+     *         description="Unauthenticated, token missing or invalid.",
      *     )
      * )
      *
@@ -88,7 +84,7 @@ class PostRegistrationController extends Controller
      *     operationId="storePostRegistration",
      *     tags={"PostRegistrations"},
      *     security={{"sanctum": {}}},
-     *     summary="Submit a new post restration from",
+     *     summary="Submit a new post restration form",
      *     description="Admins can submit a new post registration form for any user, while users can only submit a new post registration form for themselves.",
      *     @OA\RequestBody(
      *         required=true,
@@ -130,7 +126,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -177,7 +173,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -204,7 +200,7 @@ class PostRegistrationController extends Controller
      *     operationId="updatePostRegistration",
      *     tags={"PostRegistrations"},
      *     security={{"sanctum": {}}},
-     *     summary="Submit a new post restration from",
+     *     summary="Update a post restration form submission",
      *     description="Admins can submit a new post registration form for any user, while users can only submit a new post registration form for themselves.",
      *     @OA\Parameter(
      *         ref="#/components/parameters/postregistration_id",
@@ -249,7 +245,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -262,7 +258,7 @@ class PostRegistrationController extends Controller
      *     operationId="replacePostRegistration",
      *     tags={"PostRegistrations"},
      *     security={{"sanctum": {}}},
-     *     summary="Submit a new post restration from",
+     *     summary="Replace a post restration form submission",
      *     description="Admins can submit a new post registration form for any user, while users can only submit a new post registration form for themselves.",
      *     @OA\Parameter(
      *         ref="#/components/parameters/postregistration_id",
@@ -307,7 +303,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -350,7 +346,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,

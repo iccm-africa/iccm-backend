@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  *     parameter="user_id",
  *     in="path",
  *     name="User ID",
- *     description="The ID of the user you want to get",
+ *     description="The ID of the user you want to use",
  *     @OA\Schema(
  *         type="integer"
  *     )
@@ -53,7 +53,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     )
      * )
      *
@@ -109,7 +109,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -225,7 +225,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -289,7 +289,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -309,7 +309,6 @@ class UserController extends Controller
      *         ref="#/components/parameters/user_id",
      *     ),
      *     @OA\RequestBody(
-     *         request="User",
      *         required=true,
      *         description="Registration details",
      *         @OA\JsonContent(
@@ -338,7 +337,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,
@@ -387,7 +386,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated, please login first",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
      *     @OA\Response(
      *         response=403,

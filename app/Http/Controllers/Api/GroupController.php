@@ -8,8 +8,20 @@ use App\Services\GroupRegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Parameter(
+ *     parameter="group_id",
+ *     in="path",
+ *     name="Group ID",
+ *     description="The ID of the group you want to use",
+ *     @OA\Schema(
+ *         type="integer"
+ *     )
+ * )
+ */
 class GroupController extends Controller
 {
     public function __construct(protected GroupRegistrationService $groupRegistration)
@@ -34,12 +46,8 @@ class GroupController extends Controller
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
+     *         description="Unauthenticated, token missing or invalid.",
      *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Forbidden"
-     *     )
      * )
      *
      * @param  \Illuminate\Http\Request $request
@@ -55,7 +63,18 @@ class GroupController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/groups",
+     *     operationId="storeGroup",
+     *     tags={"Groups"},
+     *     security={{"sanctum": {}}},
+     *     summary="Create a new group (unsupported)",
+     *     description="Currently, groups are created automatically when a user registers. This endpoint is disabled.",
+     *     @OA\Response(
+     *         response=400,
+     *         description="You can only create groups via user registration",
+     *     ),
+     * )
      *
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
@@ -66,9 +85,35 @@ class GroupController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/groups/{id}",
+     *     operationId="getGroupById",
+     *     tags={"Groups"},
+     *     security={{"sanctum": {}}},
+     *     summary="Get a specific group",
+     *     description="Admins can view all groups, groupadmins and participants can only view their own group",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/group_id",
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Group")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, token missing or invalid.",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you can only view your own group",
+     *     )
+     * )
      *
-     * @param  \App\Models\Group $group
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Group $group
      * @return \Illuminate\Http\JsonResponse|null
      */
     public function show(Request $request, Group $group): ?JsonResponse
@@ -81,7 +126,98 @@ class GroupController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Patch(
+     *     path="/api/groups/{id}",
+     *     operationId="updateGroup",
+     *     tags={"Groups"},
+     *     security={{"sanctum": {}}},
+     *     summary="Update group details",
+     *     description="",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/group_id",
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Group details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="organisation",      type="string", maxLength=255, description="Name of the organistion/group", example="Organization XYZ"),
+     *             @OA\Property(property="website",           type="string", maxLength=255, description="Website of the organsiation", example="www.xyz-international.org"),
+     *             @OA\Property(property="orgtype",          type="string", maxLength=255, description="Type of organisation", example="Mission Agency"),
+     *             @OA\Property(property="address",           type="string", maxLength=255, description="Street", example="Street 1"),
+     *             @OA\Property(property="town",              type="string", maxLength=255, description="Town", example="Zurich"),
+     *             @OA\Property(property="state",             type="string", maxLength=255, description="State", example="ZH"),
+     *             @OA\Property(property="zipcode",           type="string", maxLength=255, description="Zipcode", example="12345"),
+     *             @OA\Property(property="country",           type="string", maxLength=255, description="Country", example="CH"),
+     *             @OA\Property(property="telephone",         type="string", maxLength=255, description="Telephone", example="123456789")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, validation failed",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, token missing or invalid.",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you can only edit your own group and you need to be a groupadmin to edit a group",
+     *     )
+     * )
+     *
+     * @OA\Put(
+     *     path="/api/groups/{id}",
+     *     operationId="replaceGroup",
+     *     tags={"Groups"},
+     *     security={{"sanctum": {}}},
+     *     summary="Replace group details",
+     *     description="",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/group_id",
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Group details",
+     *         @OA\JsonContent(
+     *             required={"organisation", "orgtype", "address", "town", "zipcode", "country", "telephone"},
+     *             @OA\Property(property="organisation",      type="string", maxLength=255, description="Name of the organistion/group", example="Organization XYZ"),
+     *             @OA\Property(property="website",           type="string", maxLength=255, description="Website of the organsiation", example="www.xyz-international.org"),
+     *             @OA\Property(property="orgtype",          type="string", maxLength=255, description="Type of organisation", example="Mission Agency"),
+     *             @OA\Property(property="address",           type="string", maxLength=255, description="Street", example="Street 1"),
+     *             @OA\Property(property="town",              type="string", maxLength=255, description="Town", example="Zurich"),
+     *             @OA\Property(property="state",             type="string", maxLength=255, description="State", example="ZH"),
+     *             @OA\Property(property="zipcode",           type="string", maxLength=255, description="Zipcode", example="12345"),
+     *             @OA\Property(property="country",           type="string", maxLength=255, description="Country", example="CH"),
+     *             @OA\Property(property="telephone",         type="string", maxLength=255, description="Telephone", example="123456789")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, validation failed",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, token missing or invalid.",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you can only edit your own group and you need to be a groupadmin to edit a group",
+     *     )
+     * )
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \App\Models\Group        $group
@@ -93,16 +229,42 @@ class GroupController extends Controller
         if ($request->user()->role == 'admin'
             || $request->user()->role == 'groupadmin' && $request->user()->group_id == $group->id
         ) {
-            $date = $this->groupRegistration->validateOnUpdate($request->all());
-            $group->update($date);
+            try {
+                $data = $this->groupRegistration->validateOnUpdate($request->all());
+            } catch (ValidationException $e) {
+                abort(400, $e->getMessage());
+            }
+            $group->update($data);
             return (new GroupResource($group))->response();
         } else {
-            abort(403, 'You can only edit your own group');
+            abort(403, 'You can only edit your own group and you need to be a groupadmin to edit a group');
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/groups/{id}",
+     *     operationId="deleteGroup",
+     *     tags={"Groups"},
+     *     security={{"sanctum": {}}},
+     *     summary="Delete group",
+     *     description="Only admins can delete groups and only if there are no users in the group",
+     *     @OA\Parameter(
+     *         ref="#/components/parameters/group_id",
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated, token missing or invalid.",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, You can not delete this group",
+     *     )
+     * )
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \App\Models\Group        $group
