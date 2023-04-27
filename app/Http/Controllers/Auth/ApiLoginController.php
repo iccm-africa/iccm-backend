@@ -15,8 +15,8 @@ class ApiLoginController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/login",
-     *     operationId="loginUser",
+     *     path="/api/auth",
+     *     operationId="authUser",
      *     tags={"Auth"},
      *     summary="Login user and create token",
      *     description="Logs in a user and returns a token",
@@ -46,7 +46,7 @@ class ApiLoginController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function login(Request $request): JsonResponse
+    public function authenticate(Request $request): JsonResponse
     {
         $this->validateLogin($request);
 
