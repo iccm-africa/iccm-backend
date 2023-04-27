@@ -94,7 +94,7 @@ class UserController extends Controller
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
      *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
-     *            ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -102,6 +102,10 @@ class UserController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
      *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error, see errors for more details",
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -121,14 +125,18 @@ class UserController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->all();
-        if ($request->user()->role == 'admin') {
-            $group = $data['group_id'];
-            $user = $this->userRegistration->registerUser($data, 'participant', $group);
-        } elseif ($request->user()->role == 'groupadmin') {
-            $group = Auth::user()->group;
-            $user = $this->userRegistration->registerUser($data, 'participant', $group);
-        } else {
-            abort(403, 'You are not allowed to create new users');
+        try {
+            if ($request->user()->role == 'admin') {
+                $group = $data['group_id'];
+                $user = $this->userRegistration->registerUser($data, 'participant', $group);
+            } elseif ($request->user()->role == 'groupadmin') {
+                $group = Auth::user()->group;
+                $user = $this->userRegistration->registerUser($data, 'participant', $group);
+            } else {
+                abort(403, 'You are not allowed to create new users');
+            }
+        } catch (ValidationException $e) {
+            abort(400, $e->getMessage());
         }
         return (new UserResource($user))->response();
     }
@@ -266,7 +274,7 @@ class UserController extends Controller
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
      *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
-     *            ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -315,7 +323,7 @@ class UserController extends Controller
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
      *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
-     *            ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -376,10 +384,6 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="Successful operation"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request, please check the error message",
      *     ),
      *     @OA\Response(
      *         response=401,
