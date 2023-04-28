@@ -13,6 +13,8 @@ This software is written in Laravel.
 The long-term goal is to have a client written separately, that communicates with this backend.
 
 ### API (new)
+
+#### Endpoints and Authentication
 A basic API is now availble providing the following endpoints:
 - `/api/users`
 - `/api/groups`
@@ -22,9 +24,11 @@ The API is protected by a token, which is generated on login after the user has 
 
 A new user can be registered by sending a POST request to `/api/users/register`.
 
-A full documentation and Test UI of the API can be found at `/api/documentation`.
+#### OpenAPI Documentation
 
-For this, first run `php artisan l5-swagger:generate` or `composer generate-docs` to generate the documentation.
+A full documentation with examples and test UI of the API can be found at `/api/documentation`. It was created with the help of [L5 Swagger](https://github.com/DarkaOnLine/L5-Swagger) using the OpenAPI 3.0 standard. Documentation is generated automatically from the code using annotations.
+
+Run `php artisan l5-swagger:generate` or `composer generate-docs` to generate or update the documentation.
 
 Setup of Development Environment
 --------------------------------
