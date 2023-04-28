@@ -20,7 +20,7 @@ A basic API is now availble providing the following endpoints:
 - `/api/groups`
 - `/api/postregistrations`
 
-The API is protected by a token, which is generated on login after the user has been authenticated using `/api/login`
+The API is protected by a token, which is generated on login after the user has been authenticated using `/api/auth`.
 
 A new user can be registered by sending a POST request to `/api/users/register`.
 
