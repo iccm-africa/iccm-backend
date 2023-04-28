@@ -109,6 +109,10 @@ class GroupController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you can only view your own group",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model Group {id}",
      *     )
      * )
      *
@@ -142,7 +146,8 @@ class GroupController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="organisation",      type="string", maxLength=255, description="Name of the organistion/group", example="Organization XYZ"),
      *             @OA\Property(property="website",           type="string", maxLength=255, description="Website of the organsiation", example="www.xyz-international.org"),
-     *             @OA\Property(property="orgtype",          type="string", maxLength=255, description="Type of organisation", example="Mission Agency"),
+     *             @OA\Property(property="orgtype",           type="string", maxLength=255, description="Type of organisation", example="other"),
+     *             @OA\Property(property="orgtypeother",      type="string", maxLength=255, description="Type of organisation", example="Government Agency"),
      *             @OA\Property(property="address",           type="string", maxLength=255, description="Street", example="Street 1"),
      *             @OA\Property(property="town",              type="string", maxLength=255, description="Town", example="Zurich"),
      *             @OA\Property(property="state",             type="string", maxLength=255, description="State", example="ZH"),
@@ -189,7 +194,8 @@ class GroupController extends Controller
      *             required={"organisation", "orgtype", "address", "town", "zipcode", "country", "telephone"},
      *             @OA\Property(property="organisation",      type="string", maxLength=255, description="Name of the organistion/group", example="Organization XYZ"),
      *             @OA\Property(property="website",           type="string", maxLength=255, description="Website of the organsiation", example="www.xyz-international.org"),
-     *             @OA\Property(property="orgtype",          type="string", maxLength=255, description="Type of organisation", example="Mission Agency"),
+     *             @OA\Property(property="orgtype",           type="string", description="Type of organisation (Mission, Church, Education, Business, Non-Profit)", example="other"),
+     *             @OA\Property(property="orgtypeother",      type="string", maxLength=255, description="Type of organisation", example="Government Agency"),
      *             @OA\Property(property="address",           type="string", maxLength=255, description="Street", example="Street 1"),
      *             @OA\Property(property="town",              type="string", maxLength=255, description="Town", example="Zurich"),
      *             @OA\Property(property="state",             type="string", maxLength=255, description="State", example="ZH"),
@@ -216,6 +222,10 @@ class GroupController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you can only edit your own group and you need to be a groupadmin to edit a group",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model Group {id}",
      *     )
      * )
      *
@@ -230,10 +240,11 @@ class GroupController extends Controller
             || $request->user()->role == 'groupadmin' && $request->user()->group_id == $group->id
         ) {
             try {
-                $data = $this->groupRegistration->validateOnUpdate($request->all());
-            } catch (ValidationException $e) {
+                $data = $this->validateBeforeUpdate($request, $group, $this->groupRegistration);
+            } catch (\Exception $e) {
                 abort(400, $e->getMessage());
             }
+            $data['org_type'] = $data['orgtype'] == 'other' ? $data['orgtypeother'] : $data['orgtype'];
             $group->update($data);
             return (new GroupResource($group))->response();
         } else {

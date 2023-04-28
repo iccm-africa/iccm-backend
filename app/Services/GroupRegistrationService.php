@@ -50,11 +50,7 @@ class GroupRegistrationService extends UserRegistrationService implements Regist
     }
 
     /**
-     * Validate registration request.
-     *
-     * @param  array $data
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
+     * @inheritdoc
      */
     public function validateOnCreate(array $data): array
     {
@@ -73,9 +69,9 @@ class GroupRegistrationService extends UserRegistrationService implements Regist
             'orgtype' => ['required', 'string', 'max:255'],
             'orgtypeother' => $data['orgtype'] == 'other' ? ['required', 'string', 'max:255'] : '',
             'address' => ['required', 'string', 'max:255'],
-            'state' => ['string', 'max:255'],
             'town' => ['required', 'string', 'max:255'],
             'zipcode' => ['required', 'string', 'max:255'],
+            'state' => ['string', 'max:255'],
             'country' => ['required', 'string', 'max:255'],
             'telephone' => ['required', 'string', 'max:255'],
             'accommodation' => 'required',
@@ -86,11 +82,7 @@ class GroupRegistrationService extends UserRegistrationService implements Regist
     }
 
     /**
-     * Validate update request.
-     *
-     * @param  array $data
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
+     * @inheritdoc
      */
     public function validateOnUpdate(array $data): array
     {
@@ -103,9 +95,30 @@ class GroupRegistrationService extends UserRegistrationService implements Regist
             'address' => ['string', 'max:255'],
             'town' => ['string', 'max:255'],
             'zipcode' => ['string', 'max:255'],
+            'state' => ['string', 'max:255'],
             'country' => ['string', 'max:255'],
             'telephone' => ['string', 'max:255'],
-            'email' => ['string', 'email', 'max:255', 'unique:users'],
+            ]
+        )->validate();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validateOnReplace(array $data): array
+    {
+        return Validator::make(
+            $data,
+            [
+            'organisation' => ['required', 'string', 'max:255'],
+            'orgtype' => ['required', 'string', 'max:255'],
+            'orgtypeother' => $data['orgtype'] == 'other' ? ['string', 'max:255'] : '',
+            'address' => ['required', 'string', 'max:255'],
+            'town' => ['required', 'string', 'max:255'],
+            'zipcode' => ['required', 'string', 'max:255'],
+            'country' => ['required', 'string', 'max:255'],
+            'state' => ['string', 'max:255'],
+            'telephone' => ['required', 'string', 'max:255'],
             ]
         )->validate();
     }

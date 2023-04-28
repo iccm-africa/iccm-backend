@@ -9,6 +9,7 @@ use App\Services\PostRegistrationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use OpenApi\Annotations as OA;
 
@@ -142,20 +143,20 @@ class PostRegistrationController extends Controller
         $data = $request->all();
         try {
             if ($request->user()->role == 'admin') {
-                $form = $this->postRegistrationService->createPostRegistration($data, User::where('id', $data['user'])->first());
+                $postregistration = $this->postRegistrationService->createPostRegistration($data, User::where('id', $data['user'])->first());
             } else {
-                $form = $this->postRegistrationService->createPostRegistration($data, $request->user());
+                $postregistration = $this->postRegistrationService->createPostRegistration($data, $request->user());
             }
         } catch (ValidationException $e) {
             abort(400, $e->getMessage());
         }
 
-        return (new PostRegistrationResource($form))->response();
+        return (new PostRegistrationResource($postregistration))->response();
     }
 
     /**
      * @OA\Get(
-     *     path="/api/postregistration/{id}",
+     *     path="/api/postregistrations/{id}",
      *     operationId="getPostRegistrationById",
      *     tags={"PostRegistrations"},
      *     security={{"sanctum": {}}},
@@ -178,17 +179,21 @@ class PostRegistrationController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you can only view your own post registration",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model PostRegistration {id}",
      *     )
      * )
      *
      * @param  \Illuminate\Http\Request     $request
      * @param  \App\Models\PostRegistration $postregistration
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|null
      */
-    public function show(Request $request, PostRegistration $form): JsonResponse
+    public function show(Request $request, PostRegistration $postregistration): ?JsonResponse
     {
-        if ($request->user()->role == 'admin' || $request->user() == $form->user()) {
-            return (new PostRegistrationResource($form))->response();
+        if ($request->user()->role == 'admin' || $request->user()->id == $postregistration->user->id) {
+            return (new PostRegistrationResource($postregistration))->response();
         } else {
             abort(403, 'You can only view your own post registration');
         }
@@ -250,6 +255,10 @@ class PostRegistrationController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you are not allowed to create new users",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model PostRegistration {id}",
      *     )
      * )
      *
@@ -308,22 +317,27 @@ class PostRegistrationController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you are not allowed to create new users",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model PostRegistration {id}",
      *     )
      * )
      *
-     * @param  \Illuminate\Http\Request     $request
-     * @param  \App\Models\PostRegistration $postregistration
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\PostRegistration $postregistration
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, PostRegistration $form)
+    public function update(Request $request, PostRegistration $postregistration): JsonResponse
     {
-        var_dump($form->user());
-        if ($request->user()->role == 'admin' || $request->user() == $form->user()) {
-            $date = $this->postRegistrationService->validateOnUpdate($request->all());
-            $form->update($date);
-
-            return (new PostRegistrationResource($form))->response();
+        if ($request->user()->role == 'admin' || $request->user()->id == $postregistration->user->id) {
+            try {
+                $data = $this->validateBeforeUpdate($request, $postregistration, $this->postRegistrationService);
+            } catch (\Exception $e) {
+                abort(400, $e->getMessage());
+            }
+            $postregistration->update($data);
+            return (new PostRegistrationResource($postregistration))->response();
         } else {
             abort(403, 'You can only edit your own post registration');
         }
@@ -331,7 +345,7 @@ class PostRegistrationController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/postregistration/{id}",
+     *     path="/api/postregistrations/{id}",
      *     operationId="deletePostRegistration",
      *     tags={"PostRegistrations"},
      *     security={{"sanctum": {}}},
@@ -350,7 +364,7 @@ class PostRegistrationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Forbidden, you can not delete your post registration submission",
+     *         description="Forbidden, you can only delete your post registration submission if you are not an admin",
      *     )
      * )
      *
@@ -358,14 +372,14 @@ class PostRegistrationController extends Controller
      * @param  \App\Models\PostRegistration $postregistration
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, PostRegistration $postregistration): \Illuminate\Http\Response
+    public function destroy(Request $request, PostRegistration $postregistration): Response
     {
-        if ($request->user()->role == 'admin') {
+        if ($request->user()->role == 'admin' || $request->user()->id == $postregistration->user->id) {
             $postregistration->delete();
 
             return response(null, 204);
         } else {
-            abort(403, 'You can not delete your post registration submission');
+            abort(403, 'You can only delete your own post registration submission if you are not an admin');
         }
     }
 }

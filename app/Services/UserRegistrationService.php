@@ -61,11 +61,7 @@ class UserRegistrationService implements RegistrationValidationInterface
     }
 
     /**
-     * Validate add user request.
-     *
-     * @param  array $data
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
+     * @inheritdoc
      */
     public function validateOnCreate(array $data): array
     {
@@ -74,7 +70,7 @@ class UserRegistrationService implements RegistrationValidationInterface
             [
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
-            'nickname' => ['string', 'max:255'],
+            'nickname' => ['string', 'nullable', 'max:255'],
             'passport' => ['required', 'string', 'max:255'],
             'gender' => ['required'],
             'residence' => ['required', 'string', 'max:255'],
@@ -85,11 +81,7 @@ class UserRegistrationService implements RegistrationValidationInterface
     }
 
     /**
-     * Validate registration request.
-     *
-     * @param  array $data
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
+     * @inheritdoc
      */
     public function validateOnUpdate(array $data): array
     {
@@ -104,6 +96,27 @@ class UserRegistrationService implements RegistrationValidationInterface
             'residence' => ['string', 'max:255'],
             'email' => ['string', 'email', 'max:255', 'unique:users'],
             'password' => ['string', 'min:8', 'confirmed'],
+            ]
+        )->validate();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validateOnReplace(array $data): array
+    {
+        return Validator::make(
+            $data,
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'lastname' => ['required', 'string', 'max:255'],
+                'nickname' => ['string', 'max:255'],
+                'passport' => ['required', 'string', 'max:255'],
+                'gender' => ['required'],
+                'residence' => ['required', 'string', 'max:255'],
+                'accommodation' => 'required',
+                'email' => ['required', 'string', 'email', 'max:255'],
+                'password' => ['string', 'min:8', 'confirmed'],
             ]
         )->validate();
     }

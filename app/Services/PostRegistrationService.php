@@ -33,11 +33,7 @@ class PostRegistrationService implements RegistrationValidationInterface
     }
 
     /**
-     * Validate registration request.
-     *
-     * @param  array $data
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
+     * @inheritdoc
      */
     public function validateOnCreate(array $data): array
     {
@@ -69,13 +65,41 @@ class PostRegistrationService implements RegistrationValidationInterface
     }
 
     /**
-     * Validate update request.
-     *
-     * @param  array $data
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
+     * @inheritdoc
      */
     public function validateOnUpdate(array $data): array
+    {
+        return Validator::make(
+            $data,
+            [
+            'share_acco'         => 'string|nullable',
+            'traveling'          => 'string',
+            'share_travelplans' => 'string|nullable',
+            'emergency_name'     => 'string',
+            'emergency_phone'     => 'string',
+            'emergency_country' => 'string',
+            'dietprefs'         => 'nullable',
+            'shirtsize'         => 'string',
+            'iccmelse'             => 'string|nullable',
+            'iccmelse_lastyear' => 'string|nullable',
+            'iccmlocation'         => 'string|nullable',
+            'knowiccm'             => 'string|nullable',
+            'experince_itman'     => 'string|nullable',
+            'expert_itman'         => 'string|nullable',
+            'learn_itman'         => 'string|nullable',
+            'tech_impl'         => 'string|nullable',
+            'new_tech'             => 'string|nullable',
+            'help_worship'         => 'string|nullable',
+            'speakers'             => 'string|nullable',
+            'help_iccm'         => 'string|nullable'
+            ]
+        )->validate();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validateOnReplace(array $data): array
     {
         return $this->validateOnCreate($data);
     }

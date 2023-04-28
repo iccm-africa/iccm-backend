@@ -93,7 +93,8 @@ class UserController extends Controller
      *             @OA\Property(property="nickname",          type="string", maxLength=255, example=""),
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
-     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
+     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US"),
+     *             @OA\Property(property="accommodation",     type="int", example="1")
      *         ),
      *     ),
      *     @OA\Response(
@@ -158,21 +159,22 @@ class UserController extends Controller
      *             @OA\Property(property="email",             type="string", format="email", description="User unique email address", example="user@gmail.com"),
      *             @OA\Property(property="password",          type="string", maxLength=255, example="test12345"),
      *             @OA\Property(property="password_confirmation",           type="string", maxLength=255, example="test12345"),
-     *             @OA\Property(property="accommodation",     type="int", example="1"),
      *             @OA\Property(property="lastname",          type="string", maxLength=255, example="Doe"),
      *             @OA\Property(property="nickname",          type="string", maxLength=255, example="Johny"),
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="John Doe"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
      *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="CH"),
+     *             @OA\Property(property="accommodation",     type="int", example="1"),
      *             @OA\Property(property="organisation",      type="string", maxLength=255, description="Name of the organistion/group", example="Organization XYZ"),
      *             @OA\Property(property="website",           type="string", maxLength=255, description="Website of the organsiation", example="https://www.xyz-international.org"),
-     *             @OA\Property(property="orgtype",          type="string", maxLength=255, description="Type of organisation", example="Mission Agency"),
+     *             @OA\Property(property="orgtype",           type="string", description="Type of organisation (Mission, Church, Education, Business, Non-Profit)", example="other"),
+     *             @OA\Property(property="orgtypeother",      type="string", maxLength=255, description="Type of organisation", example="Government Agency"),
      *             @OA\Property(property="address",           type="string", maxLength=255, description="Street", example="Street 1"),
      *             @OA\Property(property="town",              type="string", maxLength=255, description="Town", example="Zurich"),
      *             @OA\Property(property="state",             type="string", maxLength=255, description="State", example="ZH"),
      *             @OA\Property(property="zipcode",           type="string", maxLength=255, description="Zipcode", example="12345"),
      *             @OA\Property(property="country",           type="string", maxLength=255, description="Country", example="CH"),
-     *             @OA\Property(property="telephone",         type="string", maxLength=255, description="Telephone", example="123456789"),
+     *             @OA\Property(property="telephone",         type="string", maxLength=255, description="Telephone", example="123456789")
      *         ),
      *     ),
      *     @OA\Response(
@@ -230,6 +232,10 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you can only view your own profile",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model User {id}",
      *     )
      * )
      *
@@ -256,7 +262,7 @@ class UserController extends Controller
      *     security={{"sanctum": {}}},
      *     summary="Update user",
      *     description="If you are admin you can update a user within any group. If you are a groupadmin
-    you can update a user within your group. As a participant you can only update your own user.",
+                you can update a user within your group. As a participant you can only update your own user.",
      *     @OA\Parameter(
      *         ref="#/components/parameters/user_id",
      *     ),
@@ -273,7 +279,8 @@ class UserController extends Controller
      *             @OA\Property(property="nickname",          type="string", maxLength=255, example=""),
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
-     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
+     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US"),
+     *             @OA\Property(property="accommodation",     type="int", example="1"),
      *         ),
      *     ),
      *     @OA\Response(
@@ -294,6 +301,10 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you can only edit your own profile or participants from your own group",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model User {id}",
      *     )
      * )
      *
@@ -321,7 +332,8 @@ class UserController extends Controller
      *             @OA\Property(property="nickname",          type="string", maxLength=255, example=""),
      *             @OA\Property(property="passport",          type="string", maxLength=255, description="Name on passport", example="Bob Miller"),
      *             @OA\Property(property="gender",            type="string", maxLength=1, example="m"),
-     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US")
+     *             @OA\Property(property="residence",         type="string", maxLength=255, description="Country of residence", example="US"),
+     *             @OA\Property(property="accommodation",     type="int", example="1"),
      *         ),
      *     ),
      *     @OA\Response(
@@ -342,6 +354,10 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden, you can only edit your own profile or participants from your own group",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No query results for model User {id}",
      *     )
      * )
      *
@@ -354,8 +370,8 @@ class UserController extends Controller
     public function update(Request $request, User $user): JsonResponse
     {
         try {
-            $data = $this->userRegistration->validateOnUpdate($request->all());
-        } catch (ValidationException $e) {
+            $data = $this->validateBeforeUpdate($request, $user, $this->userRegistration);
+        } catch (\Exception $e) {
             abort(400, $e->getMessage());
         }
         if ($request->user()->role == 'admin' || $request->user()->id == $user->id) {
