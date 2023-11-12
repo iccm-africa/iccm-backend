@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use App\Models\Accommodation;
+use App\Models\Currency;
+
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -32,7 +35,7 @@ Route::get('/directions', function () {
 })->name('directions');
 
 Route::get('/registration', function () {
-    return view('registration', ['accommodations' => \App\Accommodation::all(), 'def' => \App\Currency::def()]);
+    return view('registration', ['accommodations' => Accommodation::all(), 'def' => Currency::def()]);
 })->name('registration');
 
 Route::get('/visa', function () {

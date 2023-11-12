@@ -3,9 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use OpenApi\Annotations as OA;
 
-class UserResource extends JsonResource
+class PostRegistrationResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

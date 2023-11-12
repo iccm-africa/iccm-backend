@@ -6,7 +6,7 @@ use App\Models\Accommodation;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Services\UserRegistration;
+use App\Services\UserRegistrationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,9 +16,9 @@ class GroupController extends Controller
     /**
      * UserController constructor.
      *
-     * @param \App\Services\UserRegistration $registration
+     * @param \App\Services\UserRegistrationService $registration
      */
-    public function __construct(protected UserRegistration $registration)
+    public function __construct(protected UserRegistrationService $registration)
     {
         $this->middleware('auth');
     }
@@ -70,7 +70,6 @@ class GroupController extends Controller
      */
     public function saveUser(Request $request)
     {
-        $this->registration->form_validate($request);
         $data = $request->all();
         $group = Auth::user()->group;
         $this->registration->registerUser($data, 'participant', $group);
@@ -98,18 +97,4 @@ class GroupController extends Controller
         return Storage::download($invoice->receiptFile());
     }
 
-
-
-    /**
-     * Validate the form
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
-     */
-    public function form_validate($request)
-    {
-        $this->registration->form_validate($request);
-    }
 }

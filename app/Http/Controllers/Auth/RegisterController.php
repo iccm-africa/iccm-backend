@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\RegistrableTrait;
 use App\Models\Accommodation;
 use App\Models\Currency;
 use App\Models\Product;
-use App\Services\UserRegistration;
+use App\Services\GroupRegistrationService;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -39,7 +37,7 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct(protected UserRegistration $registration)
+    public function __construct(protected GroupRegistrationService $registration)
     {
         $this->middleware('guest');
 		$this->redirectTo = route('group');
@@ -54,34 +52,6 @@ class RegisterController extends Controller
 	}
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'passport' => ['required', 'string', 'max:255'],
-            'gender' => ['required'],
-            'residence' => ['required', 'string', 'max:255'],
-            'organisation' => ['required', 'string', 'max:255'],
-            'orgtype' => ['required', 'string', 'max:255'],
-            'orgtypeother' => $data['orgtype'] == 'other'? ['required', 'string', 'max:255'] : '',
-            'address' => ['required', 'string', 'max:255'],
-            'town' => ['required', 'string', 'max:255'],
-            'zipcode' => ['required', 'string', 'max:255'],
-            'country' => ['required', 'string', 'max:255'],
-            'telephone' => ['required', 'string', 'max:255'],
-            'accommodation' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
-
-    /**
      * Create a new user instance after a valid registration.
      *
      * @param array $data
@@ -92,7 +62,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 		$accommodation = Accommodation::find($data['accommodation']);
-        $user = $this->registration->registerUser($data, 'groupadmin');
+        $user = $this->registration->registerGroup($data, 'groupadmin');
         return $user;
     }
 }
